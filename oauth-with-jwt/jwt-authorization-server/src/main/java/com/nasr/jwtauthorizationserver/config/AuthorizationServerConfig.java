@@ -47,6 +47,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .and()
                 .withClient("client2")
                 .secret("secret2")
+                .autoApprove(true)
                 .authorizedGrantTypes("authorization_code")
                 .redirectUris("http://localhost:8080/get-token")
                 .scopes("read");

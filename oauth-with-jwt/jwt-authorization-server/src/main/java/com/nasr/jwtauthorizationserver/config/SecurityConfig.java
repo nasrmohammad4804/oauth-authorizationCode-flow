@@ -29,11 +29,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         http.cors()
                 .and().csrf().disable();
 
         http.httpBasic();
-        http.formLogin();
+        http.formLogin().loginPage("/login")
+        .and().authorizeRequests().mvcMatchers("/login")
+        .permitAll();
     }
 
     @Bean
