@@ -2,6 +2,7 @@ package com.nasr.jwtclient.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nasr.jwtclient.exception.JwtNotValidException;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -52,7 +53,7 @@ public class UserController {
             return "redirect:/panel";
 
         } catch (Exception e) {
-           throw new RuntimeException(e.getMessage());
+           throw new JwtNotValidException(e.getMessage());
         }
     }
 }
