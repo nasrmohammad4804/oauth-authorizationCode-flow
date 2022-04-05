@@ -1,12 +1,11 @@
 package com.nasr.jwtauthorizationserver.config;
 
 import com.nasr.jwtauthorizationserver.service.ClientService;
-import com.nasr.jwtauthorizationserver.service.impl.ClientServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -33,6 +32,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Value("${private-key}")
+    private String privateKey;
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -49,19 +50,25 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .secret("secret2")
                 .autoApprove(true)
                 .authorizedGrantTypes("authorization_code")
-                .redirectUris("http://localhost:8080/get-token")
+                .redirectUris("http://localhost:8080/login/oauth2/code/app")
+                .resourceIds("app")
                 .scopes("read");
+    }
+
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        security.checkTokenAccess("permitAll()")
+        .tokenKeyAccess("permitAll()");
     }
 
     public TokenStore tokenStore() {
         return new JwtTokenStore(new JwtAccessTokenConverter());
     }
 
+    //using symmetric key for jwt token
     public JwtAccessTokenConverter converter() {
         var converter = new JwtAccessTokenConverter();
-        converter.setSigningKey("secret");
-        //we need to set at least signing key
-
+        converter.setSigningKey(privateKey);
         return converter;
     }
 
